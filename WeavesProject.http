@@ -1,0 +1,6 @@
+@WeavesProject_HostAddress = http://localhost:5085
+
+GET {{WeavesProject_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
