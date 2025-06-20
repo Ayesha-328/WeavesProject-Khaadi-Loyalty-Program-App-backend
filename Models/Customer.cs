@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace WeavesProject.Models
 {
@@ -41,6 +42,7 @@ namespace WeavesProject.Models
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // Navigation
+        [JsonIgnore] // ✅ Prevents infinite loop when serializing Customer → Transactions
         public ICollection<Transaction> Transaction { get; set; }
     }
 }

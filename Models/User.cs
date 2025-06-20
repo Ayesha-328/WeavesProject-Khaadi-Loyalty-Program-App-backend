@@ -23,8 +23,8 @@ namespace WeavesProject.Models // ✅ Wrap in correct namespace
         public string Password { get; set; }
 
         [Required]
-        [EnumDataType(typeof(UserRole))]
-        public UserRole Role { get; set; }
+    [MaxLength(20)]
+    public string Role { get; set; } // ✅ Changed from enum to string
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -32,9 +32,5 @@ namespace WeavesProject.Models // ✅ Wrap in correct namespace
         public ICollection<Transaction> Transactions { get; set; }
     }
 
-    public enum UserRole
-    {
-        store_admin,
-        super_admin
-    }
+    
 }

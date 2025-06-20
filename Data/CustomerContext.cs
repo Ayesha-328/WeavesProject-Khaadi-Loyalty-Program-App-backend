@@ -10,7 +10,12 @@ namespace WeavesProject.Data
         {
         }
 
-        // This property represents the Customers table in the database
+        // This property represents the Transactions table in the database
+        public DbSet<Transaction> Transactions { get; set; }
+        public DbSet<User> Users { get; set; }
         public DbSet<Customer> Customer { get; set; }
+
+
     }
+    
 }

@@ -84,3 +84,4 @@ C:\Users\ayesh\Full Stack\WeavesProject\WeavesProject\obj\Debug\net9.0\ref\Weave
 C:\Users\ayesh\Full Stack\WeavesProject\WeavesProject\bin\Debug\net9.0\Microsoft.AspNetCore.JsonPatch.dll
 C:\Users\ayesh\Full Stack\WeavesProject\WeavesProject\bin\Debug\net9.0\Newtonsoft.Json.dll
 C:\Users\ayesh\Full Stack\WeavesProject\WeavesProject\bin\Debug\net9.0\QRCoder.dll
+C:\Users\ayesh\Full Stack\WeavesProject\WeavesProject\obj\Debug\net9.0\WeavesProject.sourcelink.json
