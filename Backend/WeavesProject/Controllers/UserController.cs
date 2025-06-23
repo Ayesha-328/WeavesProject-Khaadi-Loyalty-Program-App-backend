@@ -93,6 +93,9 @@ public class UserController : ControllerBase
     [HttpPost("customer/create")]
     public IActionResult CreateCustomer([FromBody] CreateCustomerRequest request)
     {
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
+            
         var customer = new Customer
         {
             FullName = request.FullName,
