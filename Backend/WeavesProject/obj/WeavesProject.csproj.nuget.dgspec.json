@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\WeavesProject\\WeavesProject.csproj": {}
+    "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\Backend\\WeavesProject\\WeavesProject.csproj": {}
   },
   "projects": {
-    "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\WeavesProject\\WeavesProject.csproj": {
+    "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\Backend\\WeavesProject\\WeavesProject.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\WeavesProject\\WeavesProject.csproj",
+        "projectUniqueName": "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\Backend\\WeavesProject\\WeavesProject.csproj",
         "projectName": "WeavesProject",
-        "projectPath": "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\WeavesProject\\WeavesProject.csproj",
+        "projectPath": "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\Backend\\WeavesProject\\WeavesProject.csproj",
         "packagesPath": "C:\\Users\\ayesh\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\WeavesProject\\obj\\",
+        "outputPath": "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\Backend\\WeavesProject\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\ayesh\\AppData\\Roaming\\NuGet\\NuGet.Config"

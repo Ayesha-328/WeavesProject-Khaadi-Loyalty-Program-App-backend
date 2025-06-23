@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "IEGkYrj2HFs=",
+  "dgSpecHash": "PFlPIC6w6Z0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\WeavesProject\\WeavesProject.csproj",
+  "projectFilePath": "C:\\Users\\ayesh\\Full Stack\\WeavesProject\\Backend\\WeavesProject\\WeavesProject.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ayesh\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\ayesh\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
