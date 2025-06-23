@@ -8,6 +8,10 @@ using CsvHelper;
 using System.Globalization;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -58,7 +62,34 @@ public class UserController : ControllerBase
         });
     }
 
-    // 3. POST /api/user/customer/create
+    // 3. POST /api/user/register
+    [HttpPost("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
+    {
+        // 1. Check for existing username/email
+        if (_context.Users.Any(u => u.Username == request.Username))
+            return BadRequest("Username already exists.");
+
+        if (_context.Users.Any(u => u.Email == request.Email))
+            return BadRequest("Email already exists.");
+
+        // 2. Hash the password with salt
+        using var hmac = new HMACSHA512();
+        var user = new User
+        {
+            Username = request.Username,
+            Email = request.Email,
+            Password = Convert.ToBase64String(hmac.ComputeHash(Encoding.UTF8.GetBytes(request.Password))),
+            Role = request.Role.ToLower() // store_admin or super_admin
+        };
+
+        _context.Users.Add(user);
+        await _context.SaveChangesAsync();
+
+        return Ok(new { message = "User registered successfully." });
+    }
+
+    // 4. POST /api/user/customer/create
     [HttpPost("customer/create")]
     public IActionResult CreateCustomer([FromBody] CreateCustomerRequest request)
     {
@@ -82,50 +113,6 @@ public class UserController : ControllerBase
         return Ok(new { message = "Customer created", custId = customer.CustId });
     }
 
-    // 4. PATCH /api/user/customer/update-credit
-    [HttpPatch("customer/update-credit")]
-    public IActionResult UpdateCustomerCredit([FromBody] UpdateCreditRequest request)
-    {
-        var customer = _context.Customer.FirstOrDefault(c => c.CustId == request.CustId);
-        if (customer == null)
-            return NotFound("Customer not found");
-
-        customer.Credit = request.Credit;
-        customer.UpdatedAt = DateTime.UtcNow;
-        _context.SaveChanges();
-
-        return Ok(new { message = "Customer credit updated" });
-    }
-
-   [HttpPost("/api/customer/bulk-upload")]
-public IActionResult BulkCreditUpdate(IFormFile file)
-{
-    if (file == null || file.Length == 0)
-        return BadRequest("Invalid file");
-
-    using var reader = new StreamReader(file.OpenReadStream());
-    using var csv = new CsvHelper.CsvReader(reader, CultureInfo.InvariantCulture);
-
-    var updates = csv.GetRecords<BulkCreditUpdateRequest>().ToList();
-    int updatedCount = 0;
-
-    foreach (var row in updates)
-    {
-        var customer = _context.Customer.FirstOrDefault(c => c.CustId == row.CustId);
-        if (customer != null)
-        {
-            customer.Credit = row.Credit;
-            customer.UpdatedAt = DateTime.UtcNow;
-            updatedCount++;
-        }
-    }
-
-    _context.SaveChanges();
-
-    return Ok(new
-    {
-        message = $"{updatedCount} customer credits updated successfully."
-    });
-}
+  
 
 }
