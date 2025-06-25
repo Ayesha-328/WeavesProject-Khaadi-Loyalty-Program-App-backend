@@ -14,10 +14,10 @@ public class CustomerController : ControllerBase
 {
     private readonly CustomerContext _context;
 
-public CustomerController(CustomerContext context)
-{
-    _context = context;
-}
+    public CustomerController(CustomerContext context)
+    {
+        _context = context;
+    }
 
     // 1. POST /api/customer/login
     [HttpPost("login")]
@@ -54,18 +54,18 @@ public CustomerController(CustomerContext context)
     }
 
     // 4. GET /api/customer/qrcode/:custId
-[HttpGet("qrcode/{custId}")]
-public IActionResult GenerateCustomerQRCode(int custId)
-{
-    var customer = _context.Customer.FirstOrDefault(c => c.CustId == custId);
-    if (customer == null)
-        return NotFound("Customer not found");
+    [HttpGet("qrcode/{custId}")]
+    public IActionResult GenerateCustomerQRCode(int custId)
+    {
+        var customer = _context.Customer.FirstOrDefault(c => c.CustId == custId);
+        if (customer == null)
+            return NotFound("Customer not found");
 
-    string svgQrCode = GenerateQrCodeSvg(custId.ToString());
+        string svgQrCode = GenerateQrCodeSvg(custId.ToString());
 
-    // ✅ Return raw SVG with correct content-type
-    return Content(svgQrCode, "image/svg+xml");
-}
+        // ✅ Return raw SVG with correct content-type
+        return Content(svgQrCode, "image/svg+xml");
+    }
 
     // 🔧 Utility: Generate SVG QR Code
     private string GenerateQrCodeSvg(string data)
@@ -74,5 +74,14 @@ public IActionResult GenerateCustomerQRCode(int custId)
         using var qrData = qrGenerator.CreateQrCode(data, QRCodeGenerator.ECCLevel.Q);
         var qrCode = new SvgQRCode(qrData);
         return qrCode.GetGraphic(5);
+    }
+
+    // For get all customers
+     // 5. GET /api/customer/all
+    [HttpGet("all")]
+    public IActionResult GetAllCustomers()
+    {
+        var customers = _context.Customer.ToList();
+        return Ok(customers);
     }
 }

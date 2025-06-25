@@ -30,6 +30,26 @@ public class TransactionController : ControllerBase
     {
         var transactions = _context.Transactions
             .OrderByDescending(t => t.CreatedAt)
+            .Join(
+            _context.Customer,
+            t => t.CustId,
+            c => c.CustId,
+            (t, c) => new
+            {
+                t.TransId,
+                t.CustId,
+                CustomerFullName = c.FullName,
+                CustomerDept = c.Department,
+                CustomerPosition = c.Position,
+                CustomerCity = c.City,
+                t.UserId,
+                t.Type,
+                t.Amount,
+                t.PrevBalance,
+                t.NewBalance,
+                t.CreatedAt
+            }
+            )
             .ToList();
 
         return Ok(transactions);
@@ -70,6 +90,9 @@ public class TransactionController : ControllerBase
         int previousCredit = customer.Credit;
         int newCredit = previousCredit - request.Amount;
 
+        // Store the debit amount as a negative value
+        int debitAmount = -Math.Abs(request.Amount);
+
         // ✅ Update customer's credit and timestamp
         customer.Credit = newCredit;
         customer.UpdatedAt = DateTime.UtcNow;
@@ -80,7 +103,7 @@ public class TransactionController : ControllerBase
             CustId = request.CustId,
             UserId = request.UserId,
             Type = "Debit",
-            Amount = request.Amount,
+            Amount = debitAmount,
             PrevBalance = previousCredit,
             NewBalance = newCredit,
             CreatedAt = DateTime.UtcNow

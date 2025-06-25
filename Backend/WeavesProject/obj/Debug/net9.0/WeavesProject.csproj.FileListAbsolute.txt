@@ -174,3 +174,4 @@ C:\Users\ayesh\Full Stack\WeavesProject\Backend\WeavesProject\obj\Debug\net9.0\r
 C:\Users\ayesh\Full Stack\WeavesProject\Backend\WeavesProject\obj\Debug\net9.0\WeavesProject.pdb
 C:\Users\ayesh\Full Stack\WeavesProject\Backend\WeavesProject\obj\Debug\net9.0\WeavesProject.genruntimeconfig.cache
 C:\Users\ayesh\Full Stack\WeavesProject\Backend\WeavesProject\obj\Debug\net9.0\ref\WeavesProject.dll
+C:\Users\ayesh\Full Stack\WeavesProject\Backend\WeavesProject\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll

@@ -12,6 +12,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens; // 🔑 for SymmetricSecurityKey, SigningCredentials
+using System.Security.Claims; // for Claims
+using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+
 
 [ApiController]
 [Route("api/[controller]")]
@@ -19,10 +26,38 @@ public class UserController : ControllerBase
 {
     private readonly CustomerContext _context;
 
-    public UserController(CustomerContext context)
+    private readonly IConfiguration _config;
+
+    public UserController(CustomerContext context, IConfiguration config)
     {
         _context = context;
+        _config = config;
     }
+
+    private string GenerateJwtToken(User user)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"])); // should match appsettings.json
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+        var claims = new[]
+        {
+        new Claim("userId", user.UserId.ToString()),
+        new Claim("role", user.Role),
+        new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+    };
+
+        var token = new JwtSecurityToken(
+            issuer: "WeavesApp",
+            audience: "WeavesUsers",
+            claims: claims,
+            expires: DateTime.UtcNow.AddDays(1),
+            signingCredentials: creds
+        );
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
 
     // 1. POST /api/user/qrcode/scan
     [HttpPost("qrcode/scan")]
@@ -48,19 +83,28 @@ public class UserController : ControllerBase
 
     // 2. POST /api/user/login
     [HttpPost("login")]
-    public IActionResult Login([FromBody] UserLoginRequest request)
-    {
-        var user = _context.Users.FirstOrDefault(u => u.Email == request.Email && u.Password == request.Password);
-        if (user == null)
-            return Unauthorized("Invalid email or password");
+public IActionResult Login([FromBody] UserLoginRequest request)
+{
+    // Find user by username and plain password
+    var user = _context.Users.FirstOrDefault(u =>
+        u.Username == request.Username && u.Password == request.Password);
 
-        return Ok(new
-        {
-            message = "Login successful",
-            userId = user.UserId,
-            role = user.Role
-        });
-    }
+    if (user == null)
+        return Unauthorized("Invalid Username or password");
+
+    var token = GenerateJwtToken(user);
+
+    return Ok(new
+    {
+        message = "Login successful",
+        token,
+        userId = user.UserId,
+        username = user.Username,
+        email = user.Email,
+        role = user.Role
+    });
+}
+
 
     // 3. POST /api/user/register
     [HttpPost("register")]
@@ -95,7 +139,7 @@ public class UserController : ControllerBase
     {
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
-            
+
         var customer = new Customer
         {
             FullName = request.FullName,
@@ -115,6 +159,23 @@ public class UserController : ControllerBase
 
         return Ok(new { message = "Customer created", custId = customer.CustId });
     }
+    
+    [HttpGet("{id}")]
+[Authorize]
+public IActionResult GetUserById(int id)
+{
+    var user = _context.Users.FirstOrDefault(u => u.UserId == id);
+    if (user == null)
+        return NotFound("User not found");
+
+    return Ok(new
+    {
+        user.UserId,
+        user.Username,
+        user.Email,
+        user.Role
+    });
+}
 
   
 
