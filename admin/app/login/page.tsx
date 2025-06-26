@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useUser } from "@/context/UserContext"; 
+import { useUser } from "@/context/UserContext";
 
 export default function Login() {
   const [formData, setFormData] = useState({
@@ -23,47 +23,52 @@ export default function Login() {
     }));
   };
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  if (!formData.Username || !formData.Password) {
-    setError("Both fields are required");
-    return;
-  }
+    if (!formData.Username || !formData.Password) {
+      setError("Both fields are required");
+      return;
+    }
 
-  try {
-    setStatus("submitting");
-    setError(null);
+    try {
+      setStatus("submitting");
+      setError(null);
 
-    const apiUrl = `http://localhost:5085/api/User/login`;
+      const apiUrl = `http://localhost:5085/api/User/login`;
 
-    const res = await fetch(apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(formData),
-    });
+      const res = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
 
-    if (!res.ok) throw new Error("Invalid username or password");
+      if (!res.ok) throw new Error("Invalid username or password");
 
-    const data = await res.json();
+      const data = await res.json();
 
-    // ✅ Save to localStorage (or global state)
-    localStorage.setItem("jwt", JSON.stringify({
-      token: data.token,
-    }));
+      // ✅ Save to localStorage (or global state)
+      // Save JWT in cookie
+      document.cookie = `token=${data.token}; path=/; max-age=3600`; // 
+      // ✅ Save JWT in cookie
+      document.cookie = `token=${data.token}; path=/; max-age=3600`;
 
-    // ✅ Optionally: set in global state
-    setUser(data);
+      // ✅ Save user info in localStorage for persistence
+      localStorage.setItem("user", JSON.stringify(data)); // <-- ADD THIS LINE
 
-    router.push("/");
-  } catch (err: any) {
-    setError(err.message || "Login failed");
-  } finally {
-    setStatus("idle");
-  }
-};
+      // Optionally: also save JWT separately if you need
+      localStorage.setItem("jwt", JSON.stringify({ token: data.token }));
+      setUser(data);
+
+      router.push("/");
+    } catch (err: any) {
+      setError(err.message || "Login failed");
+    } finally {
+      setStatus("idle");
+    }
+  };
 
 
   return (

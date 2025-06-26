@@ -16,7 +16,7 @@ export type Transaction = {
 
 export default function TransactionTable() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-console.log(transactions);
+
   useEffect(() => {
     fetch(`http://localhost:5085/api/Transaction`)
       .then((res) => res.json())

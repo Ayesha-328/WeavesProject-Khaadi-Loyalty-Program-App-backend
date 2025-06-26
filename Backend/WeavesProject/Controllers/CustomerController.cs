@@ -7,6 +7,10 @@ using System.Threading.Tasks;
 // Your DbContext and models must be defined properly:
 using WeavesProject.Data; // Replace with actual namespace
 using WeavesProject.Models;
+using System.IO;
+using System.Text;
+using System.Security.Cryptography;
+
 
 [ApiController]
 [Route("api/[controller]")]
@@ -61,11 +65,19 @@ public class CustomerController : ControllerBase
         if (customer == null)
             return NotFound("Customer not found");
 
-        string svgQrCode = GenerateQrCodeSvg(custId.ToString());
+        // Construct payload: "custId:timestamp"
+        string payload = $"{custId};{DateTime.UtcNow:o}";
 
-        // ✅ Return raw SVG with correct content-type
+        // Encrypt payload
+        string encryptedString = EncryptAES(payload);
+
+        // Generate SVG string (NOT base64 or encoded)
+        string svgQrCode = GenerateQrCodeSvg(encryptedString);
+
+        // ✅ Return SVG with correct content type
         return Content(svgQrCode, "image/svg+xml");
     }
+
 
     // 🔧 Utility: Generate SVG QR Code
     private string GenerateQrCodeSvg(string data)
@@ -76,8 +88,36 @@ public class CustomerController : ControllerBase
         return qrCode.GetGraphic(5);
     }
 
+    // 🔧 Utility: Encryption function
+    private static readonly string aesKey = "1234567890123456";  // Should be 16/24/32 chars for AES-128/192/256
+    private static readonly string aesIV = "ThisIsAnIV123456";     // 16 chars for AES
+
+    private string EncryptAES(string plainText)
+    {
+        using (Aes aes = Aes.Create())
+        {
+            aes.Key = Encoding.UTF8.GetBytes(aesKey);
+            aes.IV = Encoding.UTF8.GetBytes(aesIV);
+            aes.Mode = CipherMode.CBC;
+            aes.Padding = PaddingMode.PKCS7;
+
+            ICryptoTransform encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
+            using (MemoryStream ms = new MemoryStream())
+            using (CryptoStream cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+            {
+                using (StreamWriter sw = new StreamWriter(cs))
+                {
+                    sw.Write(plainText);
+                }
+                byte[] encrypted = ms.ToArray();
+                return Convert.ToBase64String(encrypted);
+            }
+        }
+    }
+
+
     // For get all customers
-     // 5. GET /api/customer/all
+    // 5. GET /api/customer/all
     [HttpGet("all")]
     public IActionResult GetAllCustomers()
     {

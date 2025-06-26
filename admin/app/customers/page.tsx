@@ -21,7 +21,6 @@ export type Customer = {
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
-  console.log(customers);
 
   useEffect(() => {
     fetch(`http://localhost:5085/api/Customer/all`)
